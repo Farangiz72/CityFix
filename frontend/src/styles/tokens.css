@@ -1,0 +1,154 @@
+/*
+ * CityFix — дизайн-токены / Design tokens (BL-T5, FR-29).
+ *
+ * Единственный источник визуальных значений: палитра, отступы, радиусы, тени,
+ * типографика, статусы, анимации. Компоненты и страницы используют только var(--*).
+ * Палитра «берёзовая»: тёплый кремовый фон, белая бумага, тёмный «кора» текст,
+ * свежая зелень листвы и золото осени для декора.
+ * The only source of visual values; no raw colors outside this file.
+ *
+ * Контраст (WCAG AA, 4.5:1):
+ *   белый текст на --color-primary-dark (#3E7D26)  — 5.0:1
+ *   белый текст на --color-primary-deep (#2F641C)  — 7.1:1
+ *   --color-text на --color-bg / --color-surface   — 12+:1
+ *   --color-muted на --color-bg / --color-surface  — 5.7:1 / 6.6:1
+ *   --color-primary-ink на --color-bg              — 5.6:1
+ *   --color-danger с белым текстом                 — 5.6:1
+ */
+:root {
+  color-scheme: light;
+
+  /* ---------- Палитра: берёза / Birch palette ---------- */
+  --color-bg: #f6f0e2; /* фон страницы, светлая кора / birch page */
+  --color-bg-soft: #fbf6ea; /* светлый край градиента / lighter birch */
+  --color-surface: #fffbf2; /* карточки, поля / warm white paper */
+  --color-surface-alt: #f0e7d4; /* шапки таблиц, полосы / shaded wood */
+  --color-surface-sunken: #ece1cb; /* вложенные блоки / sunken wood */
+  --color-surface-translucent: rgba(255, 251, 242, 0.9); /* поверх карты / over map */
+  --color-overlay: rgba(43, 42, 40, 0.45); /* подложка модального окна / modal scrim */
+
+  --color-text: #2b2a28; /* основной текст, кора / bark text */
+  --color-muted: #635e53; /* адрес, дата, подписи / muted bark */
+  --color-placeholder: #7b7466; /* плейсхолдеры полей / placeholder */
+  --color-border: #e4d9bf; /* границы и разделители / borders */
+  --color-border-strong: #d5c7a6; /* граница при наведении / stronger border */
+
+  /* Свежая зелень / foliage */
+  --color-primary: #5db13a; /* акцент, маркеры, иконки / accent */
+  --color-primary-dark: #3e7d26; /* тёмный акцент, фон кнопки / dark accent */
+  --color-primary-deep: #2f641c; /* нажатие и hover кнопки / pressed */
+  --color-primary-ink: #356c1f; /* зелёный текст-ссылка, AA / text-safe green */
+  --color-primary-soft: rgba(93, 177, 58, 0.14);
+  --color-primary-soft-strong: rgba(93, 177, 58, 0.24);
+  --color-on-primary: #ffffff; /* 5.0:1 на primary-dark / on dark green */
+  --color-focus: rgba(62, 125, 38, 0.45); /* кольцо фокуса / focus ring */
+
+  /* Золото осени / golden autumn — только декор на светлом фоне */
+  --color-secondary: #f2b134;
+  --color-secondary-soft: rgba(242, 177, 52, 0.2);
+  --color-secondary-ink: #8a5a05; /* текстовый вариант золота / text-safe gold */
+
+  --color-danger: #c42b31; /* 5.6:1 с белым / danger with white text */
+  --color-danger-dark: #a81f27;
+  --color-danger-soft: #fdecec;
+  --color-warning: #b45309; /* 4.9:1 на карточке / warning text */
+  --color-success: #22a55a;
+  --color-success-ink: #15803d; /* 4.9:1 на карточке / success text */
+
+  /* ---------- Статусы / Status pairs (цвет, фон, рамка, текст) ---------- */
+  --status-new-color: #3b82f6;
+  --status-new-bg: #edf4fe;
+  --status-new-border: #c9ddfb;
+  --status-new-ink: #1d4ed8;
+
+  --status-verified-color: #14b8a6;
+  --status-verified-bg: #e6f9f6;
+  --status-verified-border: #b7ede5;
+  --status-verified-ink: #0f766e;
+
+  --status-in-progress-color: #f59e0b;
+  --status-in-progress-bg: #fef6e7;
+  --status-in-progress-border: #fadfae;
+  --status-in-progress-ink: #b45309;
+
+  --status-pending-color: #8b5cf6;
+  --status-pending-bg: #f3effe;
+  --status-pending-border: #ded3fd;
+  --status-pending-ink: #6d28d9;
+
+  --status-resolved-color: #22a55a;
+  --status-resolved-bg: #e7f8ee;
+  --status-resolved-border: #beebd0;
+  --status-resolved-ink: #15803d;
+
+  --status-rejected-color: #e5484d;
+  --status-rejected-bg: #fdecec;
+  --status-rejected-border: #f8cbce;
+  --status-rejected-ink: #b4232a;
+
+  /* ---------- Приоритеты / Priority accents ---------- */
+  --priority-high-fg: var(--color-warning);
+  --priority-high-dot: var(--color-secondary);
+  --priority-urgent-bg: var(--color-danger);
+  --priority-urgent-fg: var(--color-on-primary);
+
+  /* ---------- Отступы / Spacing scale ---------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+
+  /* ---------- Радиусы / Radii ---------- */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* ---------- Тени / Shadows ---------- */
+  --shadow-sm: 0 1px 2px rgba(43, 42, 40, 0.06);
+  --shadow: 0 1px 2px rgba(43, 42, 40, 0.05), 0 10px 26px rgba(62, 125, 38, 0.08);
+  --shadow-lg: 0 2px 6px rgba(43, 42, 40, 0.06), 0 22px 48px rgba(62, 125, 38, 0.14);
+  --shadow-header: 0 8px 24px rgba(43, 42, 40, 0.06);
+  --shadow-button: 0 8px 18px rgba(62, 125, 38, 0.24);
+  --shadow-marker: 0 2px 10px rgba(43, 42, 40, 0.35);
+
+  /* ---------- Типографика / Typography ---------- */
+  --font-sans: 'Inter', 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-display: 'Nunito', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: clamp(1.6rem, 1.25rem + 1.4vw, 2rem);
+  --text-3xl: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  --leading-tight: 1.15;
+  --leading-normal: 1.55;
+  --tracking-tight: -0.025em;
+
+  /* ---------- Движение / Motion (150–200 ms) ---------- */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* ---------- Светлые пятна фона / Background glows ---------- */
+  --glow-gold: rgba(242, 177, 52, 0.14);
+  --glow-green: rgba(93, 177, 58, 0.14);
+  --bg-wash: radial-gradient(circle at 10% -12%, var(--glow-gold), transparent 44%),
+    radial-gradient(circle at 94% -4%, var(--glow-green), transparent 40%);
+
+  /* ---------- Размеры / Sizes ---------- */
+  --tap: 44px; /* минимальная цель нажатия / minimum touch target */
+  --content-width: 1120px;
+}

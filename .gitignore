@@ -1,0 +1,49 @@
+# Зависимости / dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Сборка / build output
+dist/
+build/
+frontend/dist/
+backend/dist/
+
+# Окружение / environment
+.env
+.env.local
+.env.*.local
+
+# Загруженные фото / uploaded photos
+backend/uploads/*
+!backend/uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
+
+# Локальная база SQLite (файл создаётся при первом запуске)
+# Local SQLite database file, created on first run
+backend/data/*.db
+backend/data/*.db-journal
+backend/data/*.db-wal
+backend/data/*.db-shm
+
+# Логи / logs
+*.log
+npm-debug.log*
+logs/
+
+# Кэш Prisma / Prisma cache
+backend/node_modules/.prisma/
+.prisma/
+
+# Редакторы и ОС / editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Временные файлы тестов / test artefacts
+coverage/
+test-results/
+playwright-report/

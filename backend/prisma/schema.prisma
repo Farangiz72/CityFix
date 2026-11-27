@@ -1,0 +1,130 @@
+// Схема данных / Data schema — см. docs/04-er.md
+// SQLite-файл лежит внутри проекта (backend/data/cityfix.db), внешний сервер БД не нужен.
+// SQLite / SQLite file database lives inside the project, no external DB server required.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Prisma не поддерживает enum для SQLite, поэтому словари хранятся строками.
+// Допустимые значения и их проверка — backend/src/domain.ts (единственный источник правды).
+// Prisma has no enum support for SQLite, so dictionaries are stored as strings;
+// allowed values are enforced in backend/src/domain.ts.
+
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  passwordHash  String
+  fullName      String
+  role          String          @default("RESIDENT") // RESIDENT | OPERATOR | EXECUTOR | ADMIN
+  phone         String?
+  isActive      Boolean         @default(true) // false — вход запрещён / blocked by the admin
+  serviceId     String? // служба исполнителя / executor's service
+  service       Service?        @relation(fields: [serviceId], references: [id])
+  createdAt     DateTime        @default(now())
+  authored      Request[]       @relation("RequestAuthor")
+  assigned      Request[]       @relation("RequestAssignee")
+  statusChanges StatusHistory[]
+  auditEntries  AuditLog[]
+
+  @@index([role, isActive])
+  @@map("users")
+}
+
+// Справочник служб (BL-T1): код совпадает с категорией заявки, поэтому
+// фильтр «по службе» = фильтр по категории. Удаление запрещено — только isActive = false.
+// Services directory: the code mirrors the request category, so a service filter is a category filter.
+model Service {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  users     User[]
+
+  @@map("services")
+}
+
+// Справочник категорий (BL-T1): название и норматив SLA правятся администратором.
+// Categories directory: name and SLA hours are editable, disabling replaces deletion.
+model Category {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  slaHours  Int      @default(72)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("categories")
+}
+
+// Журнал действий (BL-T1): только добавление, без правки и удаления (NFR-4).
+// Audit log: append-only, no updates or deletes.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  actor      User     @relation(fields: [actorId], references: [id])
+  action     String // USER_CREATED | USER_UPDATED | ... (см. domain.ts)
+  objectType String // USER | SERVICE | CATEGORY | REQUEST
+  objectId   String
+  summary    String // готовая строка для журнала / human-readable summary
+  details    String? // JSON с изменениями / JSON changes
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([objectType, objectId])
+  @@map("audit_log")
+}
+
+model Request {
+  id          String          @id @default(cuid())
+  number      Int             @unique // сквозной номер заявки / sequential ticket number
+  title       String
+  description String
+  category    String // ROADS | LIGHTING | WATER | WASTE | OTHER
+  priority    String          @default("NORMAL") // LOW | NORMAL | HIGH | URGENT
+  status      String          @default("NEW") // NEW | VERIFIED | IN_PROGRESS | PENDING | RESOLVED | REJECTED
+  address     String
+  lat         Float
+  lng         Float
+  photoUrl    String?
+  authorId    String
+  author      User            @relation("RequestAuthor", fields: [authorId], references: [id])
+  assigneeId  String?
+  assignee    User?           @relation("RequestAssignee", fields: [assigneeId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  resolvedAt  DateTime?
+  confirmedAt DateTime? // житель подтвердил результат / confirmed by the resident
+  reopenCount Int             @default(0) // сколько раз житель возвращал заявку / reopen counter
+  resumeDate  DateTime? // ожидаемая дата возобновления из «Ожидает» / planned resume
+  rejectReason String? // код причины отказа / rejection reason code (см. domain.ts)
+  history     StatusHistory[]
+
+  // NFR-1: список фильтруется по статусу и сортируется по дате
+  @@index([status, createdAt])
+  @@index([category])
+  @@index([authorId])
+  @@index([assigneeId])
+  @@map("requests")
+}
+
+model StatusHistory {
+  id          String   @id @default(cuid())
+  requestId   String
+  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  fromStatus  String? // null — сама заявка создана / null when the request is created
+  toStatus    String
+  comment     String?
+  reasonCode  String? // код причины отказа / rejection reason code
+  changedById String
+  changedBy   User     @relation(fields: [changedById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([requestId, createdAt])
+  @@map("status_history")
+}
